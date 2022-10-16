@@ -126,7 +126,7 @@ celerybeat.pid
 
 # Environments
 .env
-.venv
+.venv_expenses
 env/
 venv/
 ENV/
