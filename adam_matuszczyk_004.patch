@@ -1,0 +1,25 @@
+From 05156e81200c1da9c62fd5a134d9107e59fd8a8a Mon Sep 17 00:00:00 2001
+From: Adam-Matuszczyk <adamatusz@gmail.com>
+Date: Sun, 16 Oct 2022 11:56:22 +0200
+Subject: [PATCH 2/7] modified_gitignore
+
+---
+ .gitignore | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/.gitignore b/.gitignore
+index de1cba6..b2ede7a 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -126,7 +126,7 @@ celerybeat.pid
+ 
+ # Environments
+ .env
+-.venv
++.venv_expenses
+ env/
+ venv/
+ ENV/
+-- 
+2.35.3.windows.1
+

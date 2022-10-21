@@ -1,0 +1,242 @@
+From 08ca33c9514e0119ddb9a371ae2feb08707e12bb Mon Sep 17 00:00:00 2001
+From: Adam-Matuszczyk <adamatusz@gmail.com>
+Date: Fri, 21 Oct 2022 20:28:45 +0200
+Subject: [PATCH 1/2] last
+
+---
+ expenses/forms.py                             | 29 ++++++++++++-
+ expenses/reports.py                           | 16 ++++++-
+ .../templates/expenses/category_list.html     | 13 +++++-
+ expenses/templates/expenses/expense_list.html | 27 ++++++++++--
+ expenses/views.py                             | 42 ++++++++++++++++++-
+ 5 files changed, 118 insertions(+), 9 deletions(-)
+
+diff --git a/expenses/forms.py b/expenses/forms.py
+index 0ad77c0..ed48860 100644
+--- a/expenses/forms.py
++++ b/expenses/forms.py
+@@ -1,12 +1,39 @@
+ from django import forms
++
+ from .models import Expense
+ 
+ 
++class DateInput(forms.DateInput):
++    input_type = 'date'
++
++
+ class ExpenseSearchForm(forms.ModelForm):
++    asc_date = forms.BooleanField()
++    des_date = forms.BooleanField()
++    from_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'from_date'}),
++                                label="from:",
++                                required=False)
++    to_date = forms.DateField(widget=DateInput(attrs={'placeholder': 'to_date'}),
++                              label="to:",
++                              required=False)
++
+     class Meta:
+         model = Expense
+-        fields = ('name',)
++        fields = ('category', 'name', 'from_date', 'to_date', 'asc_date', 'des_date')
+ 
+     def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
++
++        self.fields['asc_date'].label = 'ascending date'
++        self.fields['asc_date'].required = False
++
++        self.fields['des_date'].label = 'descending date'
++        self.fields['des_date'].required = False
++
+         self.fields['name'].required = False
++        self.fields['name'].widget.attrs['placeholder'] = 'Name'
++        self.fields['name'].label = ''
++
++        self.fields['category'].required = False
++        self.fields['category'].widget.attrs['placeholder'] = 'category'
++        self.fields['category'].label = ''
+diff --git a/expenses/reports.py b/expenses/reports.py
+index 764f992..c62d9f6 100644
+--- a/expenses/reports.py
++++ b/expenses/reports.py
+@@ -1,7 +1,8 @@
+ from collections import OrderedDict
+ 
+ from django.db.models import Sum, Value
+-from django.db.models.functions import Coalesce
++from django.db.models.functions import (Coalesce,
++                                        TruncMonth)
+ 
+ 
+ def summary_per_category(queryset):
+@@ -14,3 +15,16 @@ def summary_per_category(queryset):
+         .values_list('category_name', 's')
+     ))
+ 
++
++def summary_per_year_month(queryset):
++    return OrderedDict(sorted(
++        queryset
++        .annotate(month=TruncMonth('date'))
++        .values('month')
++        .annotate(c=Sum('amount'))
++        .values_list('month', 'c')
++    ))
++
++
++def total_exp(queryset):
++    return sum(queryset.values_list('amount', flat=True))
+diff --git a/expenses/templates/expenses/category_list.html b/expenses/templates/expenses/category_list.html
+index 3fa249e..d553659 100644
+--- a/expenses/templates/expenses/category_list.html
++++ b/expenses/templates/expenses/category_list.html
+@@ -7,15 +7,24 @@
+ 	<thead>
+ 		<tr>
+ 			<th>name</th>
++            <th>number of expenses in categories</th>
+ 			<th>actions</th>
+ 		</tr>
+ 	</thead>
+ 	<tbody>
+-		{% for obj in object_list %}
++		{% for obj in categories %}
++
+ 		<tr>
+ 			<td>
+-				{{obj.name}}
++				{{obj.name|title}}
+ 			</td>
++            <td>
++              {% for key, sum in detail_expenses.items %}
++                {% if key == obj.name %}
++                    {{ sum }}
++                {% endif %}
++            {% endfor %}
++            </td>
+ 			<td>
+ 				<a href="{% url 'expenses:category-delete' obj.id %}">delete</a>
+ 			</td>
+diff --git a/expenses/templates/expenses/expense_list.html b/expenses/templates/expenses/expense_list.html
+index d15d582..f90d0e9 100644
+--- a/expenses/templates/expenses/expense_list.html
++++ b/expenses/templates/expenses/expense_list.html
+@@ -9,9 +9,12 @@
+   <button type="submit">search</button>
+ </form>
+ <br>
++    <h2>Total Expenses: {{ total_exp }}</h2>
+ <table border="1">
+-	<caption>Expenses</caption>
+-	<thead>
++    <caption>Expenses </caption>
++    <thead>
++    <tr>
++    <thead>
+ 	  <tr>
+ 		<th>no.</th>
+ 		<th>category</th>
+@@ -55,5 +58,23 @@
+ 	</tr>
+ 	{% endfor %}
+   </tr>
+-</table>
++</table>&nbsp
++
++   <table border="1">
++        <caption>Summary per year-month</caption></br>
++       <tr>
++            <th>year</th>
++            <th>month</th>
++            <th>exp. summary</th>
++        </tr>
++        <tr>
++            {% for date, total in summary_per_year_month.items %}
++                <tr>
++                    <td>{{ date.year }}:</td>
++                    <td> {{ date.month }}:</td>
++                    <td>{{ total|floatformat:2 }}</td>
++                </tr>
++            {% endfor %}
++        </tr>
++    </table>
+ {% endblock %}
+diff --git a/expenses/views.py b/expenses/views.py
+index aefaae9..6f73cbb 100644
+--- a/expenses/views.py
++++ b/expenses/views.py
+@@ -1,13 +1,19 @@
++from django.http import request
+ from django.views.generic.list import ListView
++from django.shortcuts import render
+ 
+ from .forms import ExpenseSearchForm
+ from .models import Expense, Category
+-from .reports import summary_per_category
++from .reports import (summary_per_category,
++                      summary_per_year_month,
++                      total_exp)
++
++from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+ 
+ 
+ class ExpenseListView(ListView):
+     model = Expense
+-    paginate_by = 5
++    paginate_by = 7
+ 
+     def get_context_data(self, *, object_list=None, **kwargs):
+         queryset = object_list if object_list is not None else self.object_list
+@@ -15,16 +21,48 @@ class ExpenseListView(ListView):
+         form = ExpenseSearchForm(self.request.GET)
+         if form.is_valid():
+             name = form.cleaned_data.get('name', '').strip()
++            category = form.cleaned_data.get('category', )
++            asc_date = form.cleaned_data.get('date_ascending',)
++            des_date = form.cleaned_data.get('date_descending',)
++            from_date = form.cleaned_data.get('from_date',)
++            to_date = form.cleaned_data.get('to_date',)
++
+             if name:
+                 queryset = queryset.filter(name__icontains=name)
++            if category:
++                queryset = queryset.filter(category=category)
++            if asc_date:
++                queryset = queryset.filter().order_by('date')
++            if des_date:
++                queryset = queryset.filter().order_by('-date')
++            if from_date and to_date:
++                queryset = queryset.filter(date__range=(from_date, to_date))
++            if from_date is None and to_date:
++                queryset = queryset.filter(date__lte=to_date)
++            if from_date and to_date is None:
++                queryset = queryset.filter(date__gte=from_date)
+ 
+         return super().get_context_data(
+             form=form,
+             object_list=queryset,
+             summary_per_category=summary_per_category(queryset),
++            summary_per_year_month=summary_per_year_month(queryset),
++            total_exp=total_exp(queryset),
+             **kwargs)
+ 
++
+ class CategoryListView(ListView):
+     model = Category
+     paginate_by = 5
+ 
++    def get(self, request, **kwargs):
++        categories = Category.objects.all()
++        expenses = Expense.objects.all()
++        detail_expenses = {category.name: 0 for category in categories}
++        for expense in expenses:
++            detail_expenses[expense.category.name] += 1
++
++        return render(request, 'expenses/category_list.html',
++                      context={'categories': categories,
++                               'detail_expenses': detail_expenses
++                               })
+-- 
+2.35.3.windows.1
+
