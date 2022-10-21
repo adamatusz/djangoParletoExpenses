@@ -1,4 +1,4 @@
-from django.http import request
+
 from django.views.generic.list import ListView
 from django.shortcuts import render
 
