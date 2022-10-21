@@ -1,0 +1,502 @@
+diff --git a/venv_expenses/Scripts/activate b/venv_expenses/Scripts/activate
+new file mode 100644
+index 0000000..0345dfb
+--- /dev/null
++++ b/venv_expenses/Scripts/activate
+@@ -0,0 +1,83 @@
++# This file must be used with "source bin/activate" *from bash*
++# you cannot run it directly
++
++
++if [ "${BASH_SOURCE-}" = "$0" ]; then
++    echo "You must source this script: \$ source $0" >&2
++    exit 33
++fi
++
++deactivate () {
++    unset -f pydoc >/dev/null 2>&1 || true
++
++    # reset old environment variables
++    # ! [ -z ${VAR+_} ] returns true if VAR is declared at all
++    if ! [ -z "${_OLD_VIRTUAL_PATH:+_}" ] ; then
++        PATH="$_OLD_VIRTUAL_PATH"
++        export PATH
++        unset _OLD_VIRTUAL_PATH
++    fi
++    if ! [ -z "${_OLD_VIRTUAL_PYTHONHOME+_}" ] ; then
++        PYTHONHOME="$_OLD_VIRTUAL_PYTHONHOME"
++        export PYTHONHOME
++        unset _OLD_VIRTUAL_PYTHONHOME
++    fi
++
++    # The hash command must be called to get it to forget past
++    # commands. Without forgetting past commands the $PATH changes
++    # we made may not be respected
++    hash -r 2>/dev/null
++
++    if ! [ -z "${_OLD_VIRTUAL_PS1+_}" ] ; then
++        PS1="$_OLD_VIRTUAL_PS1"
++        export PS1
++        unset _OLD_VIRTUAL_PS1
++    fi
++
++    unset VIRTUAL_ENV
++    if [ ! "${1-}" = "nondestructive" ] ; then
++    # Self destruct!
++        unset -f deactivate
++    fi
++}
++
++# unset irrelevant variables
++deactivate nondestructive
++
++VIRTUAL_ENV='C:\Users\adamm\OneDrive\Dokumenty\PARLETO\project\venv_expenses'
++if ([ "$OSTYPE" = "cygwin" ] || [ "$OSTYPE" = "msys" ]) && $(command -v cygpath &> /dev/null) ; then
++    VIRTUAL_ENV=$(cygpath -u "$VIRTUAL_ENV")
++fi
++export VIRTUAL_ENV
++
++_OLD_VIRTUAL_PATH="$PATH"
++PATH="$VIRTUAL_ENV/Scripts:$PATH"
++export PATH
++
++# unset PYTHONHOME if set
++if ! [ -z "${PYTHONHOME+_}" ] ; then
++    _OLD_VIRTUAL_PYTHONHOME="$PYTHONHOME"
++    unset PYTHONHOME
++fi
++
++if [ -z "${VIRTUAL_ENV_DISABLE_PROMPT-}" ] ; then
++    _OLD_VIRTUAL_PS1="${PS1-}"
++    if [ "x" != x ] ; then
++        PS1="() ${PS1-}"
++    else
++        PS1="(`basename \"$VIRTUAL_ENV\"`) ${PS1-}"
++    fi
++    export PS1
++fi
++
++# Make sure to unalias pydoc if it's already there
++alias pydoc 2>/dev/null >/dev/null && unalias pydoc || true
++
++pydoc () {
++    python -m pydoc "$@"
++}
++
++# The hash command must be called to get it to forget past
++# commands. Without forgetting past commands the $PATH changes
++# we made may not be respected
++hash -r 2>/dev/null
+diff --git a/venv_expenses/Scripts/activate.bat b/venv_expenses/Scripts/activate.bat
+new file mode 100644
+index 0000000..fe6b791
+--- /dev/null
++++ b/venv_expenses/Scripts/activate.bat
+@@ -0,0 +1,39 @@
++@echo off
++
++set "VIRTUAL_ENV=C:\Users\adamm\OneDrive\Dokumenty\PARLETO\project\venv_expenses"
++
++if defined _OLD_VIRTUAL_PROMPT (
++    set "PROMPT=%_OLD_VIRTUAL_PROMPT%"
++) else (
++    if not defined PROMPT (
++        set "PROMPT=$P$G"
++    )
++    if not defined VIRTUAL_ENV_DISABLE_PROMPT (
++        set "_OLD_VIRTUAL_PROMPT=%PROMPT%"
++    )
++)
++if not defined VIRTUAL_ENV_DISABLE_PROMPT (
++    if "" NEQ "" (
++        set "PROMPT=() %PROMPT%"
++    ) else (
++        for %%d in ("%VIRTUAL_ENV%") do set "PROMPT=(%%~nxd) %PROMPT%"
++    )
++)
++
++REM Don't use () to avoid problems with them in %PATH%
++if defined _OLD_VIRTUAL_PYTHONHOME goto ENDIFVHOME
++    set "_OLD_VIRTUAL_PYTHONHOME=%PYTHONHOME%"
++:ENDIFVHOME
++
++set PYTHONHOME=
++
++REM if defined _OLD_VIRTUAL_PATH (
++if not defined _OLD_VIRTUAL_PATH goto ENDIFVPATH1
++    set "PATH=%_OLD_VIRTUAL_PATH%"
++:ENDIFVPATH1
++REM ) else (
++if defined _OLD_VIRTUAL_PATH goto ENDIFVPATH2
++    set "_OLD_VIRTUAL_PATH=%PATH%"
++:ENDIFVPATH2
++
++set "PATH=%VIRTUAL_ENV%\Scripts;%PATH%"
+diff --git a/venv_expenses/Scripts/activate.fish b/venv_expenses/Scripts/activate.fish
+new file mode 100644
+index 0000000..e489257
+--- /dev/null
++++ b/venv_expenses/Scripts/activate.fish
+@@ -0,0 +1,100 @@
++# This file must be used using `source bin/activate.fish` *within a running fish ( http://fishshell.com ) session*.
++# Do not run it directly.
++
++function _bashify_path -d "Converts a fish path to something bash can recognize"
++    set fishy_path $argv
++    set bashy_path $fishy_path[1]
++    for path_part in $fishy_path[2..-1]
++        set bashy_path "$bashy_path:$path_part"
++    end
++    echo $bashy_path
++end
++
++function _fishify_path -d "Converts a bash path to something fish can recognize"
++    echo $argv | tr ':' '\n'
++end
++
++function deactivate -d 'Exit virtualenv mode and return to the normal environment.'
++    # reset old environment variables
++    if test -n "$_OLD_VIRTUAL_PATH"
++        # https://github.com/fish-shell/fish-shell/issues/436 altered PATH handling
++        if test (echo $FISH_VERSION | head -c 1) -lt 3
++            set -gx PATH (_fishify_path "$_OLD_VIRTUAL_PATH")
++        else
++            set -gx PATH $_OLD_VIRTUAL_PATH
++        end
++        set -e _OLD_VIRTUAL_PATH
++    end
++
++    if test -n "$_OLD_VIRTUAL_PYTHONHOME"
++        set -gx PYTHONHOME "$_OLD_VIRTUAL_PYTHONHOME"
++        set -e _OLD_VIRTUAL_PYTHONHOME
++    end
++
++    if test -n "$_OLD_FISH_PROMPT_OVERRIDE"
++       and functions -q _old_fish_prompt
++        # Set an empty local `$fish_function_path` to allow the removal of `fish_prompt` using `functions -e`.
++        set -l fish_function_path
++
++        # Erase virtualenv's `fish_prompt` and restore the original.
++        functions -e fish_prompt
++        functions -c _old_fish_prompt fish_prompt
++        functions -e _old_fish_prompt
++        set -e _OLD_FISH_PROMPT_OVERRIDE
++    end
++
++    set -e VIRTUAL_ENV
++
++    if test "$argv[1]" != 'nondestructive'
++        # Self-destruct!
++        functions -e pydoc
++        functions -e deactivate
++        functions -e _bashify_path
++        functions -e _fishify_path
++    end
++end
++
++# Unset irrelevant variables.
++deactivate nondestructive
++
++set -gx VIRTUAL_ENV 'C:\Users\adamm\OneDrive\Dokumenty\PARLETO\project\venv_expenses'
++
++# https://github.com/fish-shell/fish-shell/issues/436 altered PATH handling
++if test (echo $FISH_VERSION | head -c 1) -lt 3
++   set -gx _OLD_VIRTUAL_PATH (_bashify_path $PATH)
++else
++    set -gx _OLD_VIRTUAL_PATH $PATH
++end
++set -gx PATH "$VIRTUAL_ENV"'/Scripts' $PATH
++
++# Unset `$PYTHONHOME` if set.
++if set -q PYTHONHOME
++    set -gx _OLD_VIRTUAL_PYTHONHOME $PYTHONHOME
++    set -e PYTHONHOME
++end
++
++function pydoc
++    python -m pydoc $argv
++end
++
++if test -z "$VIRTUAL_ENV_DISABLE_PROMPT"
++    # Copy the current `fish_prompt` function as `_old_fish_prompt`.
++    functions -c fish_prompt _old_fish_prompt
++
++    function fish_prompt
++        # Run the user's prompt first; it might depend on (pipe)status.
++        set -l prompt (_old_fish_prompt)
++
++        # Prompt override provided?
++        # If not, just prepend the environment name.
++        if test -n ''
++            printf '(%s) ' ''
++        else
++            printf '(%s) ' (basename "$VIRTUAL_ENV")
++        end
++
++        string join -- \n $prompt # handle multi-line prompts
++    end
++
++    set -gx _OLD_FISH_PROMPT_OVERRIDE "$VIRTUAL_ENV"
++end
+diff --git a/venv_expenses/Scripts/activate.nu b/venv_expenses/Scripts/activate.nu
+new file mode 100644
+index 0000000..d65d335
+--- /dev/null
++++ b/venv_expenses/Scripts/activate.nu
+@@ -0,0 +1,41 @@
++# Setting all environment variables for the venv
++let path-name = (if ((sys).host.name == "Windows") { "Path" } { "PATH" })
++let virtual-env = "C:\Users\adamm\OneDrive\Dokumenty\PARLETO\project\venv_expenses"
++let bin = "Scripts"
++let path-sep = ";"
++
++let old-path = ($nu.path | str collect ($path-sep))
++
++let venv-path = ([$virtual-env $bin] | path join)
++let new-path = ($nu.path | prepend $venv-path | str collect ($path-sep))
++
++# environment variables that will be batched loaded to the virtual env
++let new-env = ([
++    [name, value];
++    [$path-name $new-path]
++    [_OLD_VIRTUAL_PATH $old-path]
++    [VIRTUAL_ENV $virtual-env]
++])
++
++load-env $new-env
++
++# Creating the new prompt for the session
++let virtual_prompt = (if ("" != "") {
++    "() "
++} {
++    (build-string '(' ($virtual-env | path basename) ') ')
++}
++)
++
++# If there is no default prompt, then only the env is printed in the prompt
++let new_prompt = (if ( config | select prompt | empty? ) {
++    ($"build-string '($virtual_prompt)'")
++} {
++    ($"build-string '($virtual_prompt)' (config get prompt | str find-replace "build-string" "")")
++})
++let-env PROMPT_COMMAND = $new_prompt
++
++# We are using alias as the function definitions because only aliases can be
++# removed from the scope
++alias pydoc = python -m pydoc
++alias deactivate = source "C:\Users\adamm\OneDrive\Dokumenty\PARLETO\project\venv_expenses\Scripts\deactivate.nu"
+diff --git a/venv_expenses/Scripts/activate.ps1 b/venv_expenses/Scripts/activate.ps1
+new file mode 100644
+index 0000000..2057a7e
+--- /dev/null
++++ b/venv_expenses/Scripts/activate.ps1
+@@ -0,0 +1,60 @@
++$script:THIS_PATH = $myinvocation.mycommand.path
++$script:BASE_DIR = Split-Path (Resolve-Path "$THIS_PATH/..") -Parent
++
++function global:deactivate([switch] $NonDestructive) {
++    if (Test-Path variable:_OLD_VIRTUAL_PATH) {
++        $env:PATH = $variable:_OLD_VIRTUAL_PATH
++        Remove-Variable "_OLD_VIRTUAL_PATH" -Scope global
++    }
++
++    if (Test-Path function:_old_virtual_prompt) {
++        $function:prompt = $function:_old_virtual_prompt
++        Remove-Item function:\_old_virtual_prompt
++    }
++
++    if ($env:VIRTUAL_ENV) {
++        Remove-Item env:VIRTUAL_ENV -ErrorAction SilentlyContinue
++    }
++
++    if (!$NonDestructive) {
++        # Self destruct!
++        Remove-Item function:deactivate
++        Remove-Item function:pydoc
++    }
++}
++
++function global:pydoc {
++    python -m pydoc $args
++}
++
++# unset irrelevant variables
++deactivate -nondestructive
++
++$VIRTUAL_ENV = $BASE_DIR
++$env:VIRTUAL_ENV = $VIRTUAL_ENV
++
++New-Variable -Scope global -Name _OLD_VIRTUAL_PATH -Value $env:PATH
++
++$env:PATH = "$env:VIRTUAL_ENV/Scripts;" + $env:PATH
++if (!$env:VIRTUAL_ENV_DISABLE_PROMPT) {
++    function global:_old_virtual_prompt {
++        ""
++    }
++    $function:_old_virtual_prompt = $function:prompt
++
++    if ("" -ne "") {
++        function global:prompt {
++            # Add the custom prefix to the existing prompt
++            $previous_prompt_value = & $function:_old_virtual_prompt
++            ("() " + $previous_prompt_value)
++        }
++    }
++    else {
++        function global:prompt {
++            # Add a prefix to the current prompt, but don't discard it.
++            $previous_prompt_value = & $function:_old_virtual_prompt
++            $new_prompt_value = "($( Split-Path $env:VIRTUAL_ENV -Leaf )) "
++            ($new_prompt_value + $previous_prompt_value)
++        }
++    }
++}
+diff --git a/venv_expenses/Scripts/activate_this.py b/venv_expenses/Scripts/activate_this.py
+new file mode 100644
+index 0000000..3d79a53
+--- /dev/null
++++ b/venv_expenses/Scripts/activate_this.py
+@@ -0,0 +1,32 @@
++# -*- coding: utf-8 -*-
++"""Activate virtualenv for current interpreter:
++
++Use exec(open(this_file).read(), {'__file__': this_file}).
++
++This can be used when you must use an existing Python interpreter, not the virtualenv bin/python.
++"""
++import os
++import site
++import sys
++
++try:
++    abs_file = os.path.abspath(__file__)
++except NameError:
++    raise AssertionError("You must use exec(open(this_file).read(), {'__file__': this_file}))")
++
++bin_dir = os.path.dirname(abs_file)
++base = bin_dir[: -len("Scripts") - 1]  # strip away the bin part from the __file__, plus the path separator
++
++# prepend bin to PATH (this file is inside the bin directory)
++os.environ["PATH"] = os.pathsep.join([bin_dir] + os.environ.get("PATH", "").split(os.pathsep))
++os.environ["VIRTUAL_ENV"] = base  # virtual env is right above bin directory
++
++# add the virtual environments libraries to the host python import mechanism
++prev_length = len(sys.path)
++for lib in "..\Lib\site-packages".split(os.pathsep):
++    path = os.path.realpath(os.path.join(bin_dir, lib))
++    site.addsitedir(path.decode("utf-8") if "" else path)
++sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]
++
++sys.real_prefix = sys.prefix
++sys.prefix = base
+diff --git a/venv_expenses/Scripts/deactivate.bat b/venv_expenses/Scripts/deactivate.bat
+new file mode 100644
+index 0000000..7bbc568
+--- /dev/null
++++ b/venv_expenses/Scripts/deactivate.bat
+@@ -0,0 +1,19 @@
++@echo off
++
++set VIRTUAL_ENV=
++
++REM Don't use () to avoid problems with them in %PATH%
++if not defined _OLD_VIRTUAL_PROMPT goto ENDIFVPROMPT
++    set "PROMPT=%_OLD_VIRTUAL_PROMPT%"
++    set _OLD_VIRTUAL_PROMPT=
++:ENDIFVPROMPT
++
++if not defined _OLD_VIRTUAL_PYTHONHOME goto ENDIFVHOME
++    set "PYTHONHOME=%_OLD_VIRTUAL_PYTHONHOME%"
++    set _OLD_VIRTUAL_PYTHONHOME=
++:ENDIFVHOME
++
++if not defined _OLD_VIRTUAL_PATH goto ENDIFVPATH
++    set "PATH=%_OLD_VIRTUAL_PATH%"
++    set _OLD_VIRTUAL_PATH=
++:ENDIFVPATH
+diff --git a/venv_expenses/Scripts/deactivate.nu b/venv_expenses/Scripts/deactivate.nu
+new file mode 100644
+index 0000000..4052438
+--- /dev/null
++++ b/venv_expenses/Scripts/deactivate.nu
+@@ -0,0 +1,11 @@
++# Setting the old path
++let path-name = (if ((sys).host.name == "Windows") { "Path" } { "PATH" })
++let-env $path-name = $nu.env._OLD_VIRTUAL_PATH
++
++# Unleting the environment variables that were created when activating the env
++unlet-env VIRTUAL_ENV
++unlet-env _OLD_VIRTUAL_PATH
++unlet-env PROMPT_COMMAND
++
++unalias pydoc
++unalias deactivate
+diff --git a/venv_expenses/Scripts/django-admin.exe b/venv_expenses/Scripts/django-admin.exe
+new file mode 100644
+index 0000000..ded469e
+Binary files /dev/null and b/venv_expenses/Scripts/django-admin.exe differ
+diff --git a/venv_expenses/Scripts/pip-3.10.exe b/venv_expenses/Scripts/pip-3.10.exe
+new file mode 100644
+index 0000000..d026d00
+Binary files /dev/null and b/venv_expenses/Scripts/pip-3.10.exe differ
+diff --git a/venv_expenses/Scripts/pip.exe b/venv_expenses/Scripts/pip.exe
+new file mode 100644
+index 0000000..d026d00
+Binary files /dev/null and b/venv_expenses/Scripts/pip.exe differ
+diff --git a/venv_expenses/Scripts/pip3.10.exe b/venv_expenses/Scripts/pip3.10.exe
+new file mode 100644
+index 0000000..d026d00
+Binary files /dev/null and b/venv_expenses/Scripts/pip3.10.exe differ
+diff --git a/venv_expenses/Scripts/pip3.exe b/venv_expenses/Scripts/pip3.exe
+new file mode 100644
+index 0000000..d026d00
+Binary files /dev/null and b/venv_expenses/Scripts/pip3.exe differ
+diff --git a/venv_expenses/Scripts/pydoc.bat b/venv_expenses/Scripts/pydoc.bat
+new file mode 100644
+index 0000000..3d46a23
+--- /dev/null
++++ b/venv_expenses/Scripts/pydoc.bat
+@@ -0,0 +1 @@
++python.exe -m pydoc %*
+diff --git a/venv_expenses/Scripts/python.exe b/venv_expenses/Scripts/python.exe
+new file mode 100644
+index 0000000..79b1512
+Binary files /dev/null and b/venv_expenses/Scripts/python.exe differ
+diff --git a/venv_expenses/Scripts/pythonw.exe b/venv_expenses/Scripts/pythonw.exe
+new file mode 100644
+index 0000000..4fcaeb3
+Binary files /dev/null and b/venv_expenses/Scripts/pythonw.exe differ
+diff --git a/venv_expenses/Scripts/sqlformat.exe b/venv_expenses/Scripts/sqlformat.exe
+new file mode 100644
+index 0000000..2dc6438
+Binary files /dev/null and b/venv_expenses/Scripts/sqlformat.exe differ
+diff --git a/venv_expenses/Scripts/wheel-3.10.exe b/venv_expenses/Scripts/wheel-3.10.exe
+new file mode 100644
+index 0000000..6ebc745
+Binary files /dev/null and b/venv_expenses/Scripts/wheel-3.10.exe differ
+diff --git a/venv_expenses/Scripts/wheel.exe b/venv_expenses/Scripts/wheel.exe
+new file mode 100644
+index 0000000..6ebc745
+Binary files /dev/null and b/venv_expenses/Scripts/wheel.exe differ
+diff --git a/venv_expenses/Scripts/wheel3.10.exe b/venv_expenses/Scripts/wheel3.10.exe
+new file mode 100644
+index 0000000..6ebc745
+Binary files /dev/null and b/venv_expenses/Scripts/wheel3.10.exe differ
+diff --git a/venv_expenses/Scripts/wheel3.exe b/venv_expenses/Scripts/wheel3.exe
+new file mode 100644
+index 0000000..6ebc745
+Binary files /dev/null and b/venv_expenses/Scripts/wheel3.exe differ
+diff --git a/venv_expenses/pyvenv.cfg b/venv_expenses/pyvenv.cfg
+new file mode 100644
+index 0000000..20a6e7b
+--- /dev/null
++++ b/venv_expenses/pyvenv.cfg
+@@ -0,0 +1,8 @@
++home = C:\Python\Python310
++implementation = CPython
++version_info = 3.10.4.final.0
++virtualenv = 20.13.0
++include-system-site-packages = false
++base-prefix = C:\Python\Python310
++base-exec-prefix = C:\Python\Python310
++base-executable = C:\Python\Python310\python.exe
