@@ -9,9 +9,12 @@
   <button type="submit">search</button>
 </form>
 <br>
+    <h2>Total Expenses: {{ total_exp }}</h2>
 <table border="1">
-	<caption>Expenses</caption>
-	<thead>
+    <caption>Expenses </caption>
+    <thead>
+    <tr>
+    <thead>
 	  <tr>
 		<th>no.</th>
 		<th>category</th>
@@ -55,5 +58,23 @@
 	</tr>
 	{% endfor %}
   </tr>
-</table>
+</table>&nbsp
+
+   <table border="1">
+        <caption>Summary per year-month</caption></br>
+       <tr>
+            <th>year</th>
+            <th>month</th>
+            <th>exp. summary</th>
+        </tr>
+        <tr>
+            {% for date, total in summary_per_year_month.items %}
+                <tr>
+                    <td>{{ date.year }}:</td>
+                    <td> {{ date.month }}:</td>
+                    <td>{{ total|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </tr>
+    </table>
 {% endblock %}

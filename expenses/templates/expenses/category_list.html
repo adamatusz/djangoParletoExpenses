@@ -7,15 +7,24 @@
 	<thead>
 		<tr>
 			<th>name</th>
+            <th>number of expenses in categories</th>
 			<th>actions</th>
 		</tr>
 	</thead>
 	<tbody>
-		{% for obj in object_list %}
+		{% for obj in categories %}
+
 		<tr>
 			<td>
-				{{obj.name}}
+				{{obj.name|title}}
 			</td>
+            <td>
+              {% for key, sum in detail_expenses.items %}
+                {% if key == obj.name %}
+                    {{ sum }}
+                {% endif %}
+            {% endfor %}
+            </td>
 			<td>
 				<a href="{% url 'expenses:category-delete' obj.id %}">delete</a>
 			</td>
