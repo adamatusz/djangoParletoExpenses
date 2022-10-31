@@ -1,4 +1,3 @@
-
 from django.views.generic.list import ListView
 from django.shortcuts import render
 
@@ -13,7 +12,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 class ExpenseListView(ListView):
     model = Expense
-    paginate_by = 7
+    paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs):
         queryset = object_list if object_list is not None else self.object_list
@@ -22,10 +21,10 @@ class ExpenseListView(ListView):
         if form.is_valid():
             name = form.cleaned_data.get('name', '').strip()
             category = form.cleaned_data.get('category', )
-            asc_date = form.cleaned_data.get('date_ascending',)
-            des_date = form.cleaned_data.get('date_descending',)
-            from_date = form.cleaned_data.get('from_date',)
-            to_date = form.cleaned_data.get('to_date',)
+            asc_date = form.cleaned_data.get('date_ascending', )
+            des_date = form.cleaned_data.get('date_descending', )
+            from_date = form.cleaned_data.get('from_date', )
+            to_date = form.cleaned_data.get('to_date', )
 
             if name:
                 queryset = queryset.filter(name__icontains=name)
@@ -42,12 +41,16 @@ class ExpenseListView(ListView):
             if from_date and to_date is None:
                 queryset = queryset.filter(date__gte=from_date)
 
+        qlist = [f'{key}={val}' for key, val in self.request.GET.items() if val and key != 'page']
+        query = "&".join(qlist)
+
         return super().get_context_data(
             form=form,
             object_list=queryset,
             summary_per_category=summary_per_category(queryset),
             summary_per_year_month=summary_per_year_month(queryset),
             total_exp=total_exp(queryset),
+            query=query,
             **kwargs)
 
 
